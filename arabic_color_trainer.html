@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arabic Root Color Trainer</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .input-section h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .arabic-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 2rem;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+        
+        .arabic-input:focus {
+            outline: none;
+            border-color: #2196F3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+        
+        .color-picker-section {
+            text-align: center;
+        }
+        
+        .color-display {
+            width: 150px;
+            height: 150px;
+            border: 3px solid #ddd;
+            border-radius: 50%;
+            margin: 20px auto;
+            cursor: pointer;
+            transition: transform 0.2s;
+            background: #ffffff;
+        }
+        
+        .color-display:hover {
+            transform: scale(1.05);
+        }
+        
+        .color-values {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+        
+        .color-values div {
+            margin: 5px 0;
+        }
+        
+        .hidden-color-input {
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .training-data {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .training-data h2 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .data-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-item:last-child {
+            border-bottom: none;
+        }
+        
+        .word-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            direction: rtl;
+        }
+        
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+        }
+        
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2196F3;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .export-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #FF9800, #F57C00);
+            margin: 0 10px;
+        }
+        
+        .validation-error {
+            color: #ff4444;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .arabic-input {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>مدرب ألوان الجذور العربية</h1>
+            <p>Arabic Root Color Trainer - Collect training data for color-root associations</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h2>إدخال البيانات - Data Input</h2>
+                
+                <div class="form-group">
+                    <label for="arabicRoot">جذر ثلاثي - 3-Letter Root:</label>
+                    <input type="text" id="arabicRoot" class="arabic-input" placeholder="كتب" maxlength="3">
+                    <div id="wordError" class="validation-error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>اختر اللون - Choose Color:</label>
+                    <div class="color-picker-section">
+                        <div id="colorDisplay" class="color-display" title="Click to select color"></div>
+                        <input type="color" id="colorPicker" class="hidden-color-input">
+                        <div class="color-values">
+                            <div>RGB: <span id="rgbValue">255, 255, 255</span></div>
+                            <div>CIE L*: <span id="cieL">100.00</span></div>
+                            <div>CIE a*: <span id="cieA">0.00</span></div>
+                            <div>CIE b*: <span id="cieB">0.00</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="addData" class="btn">إضافة البيانات - Add Data</button>
+            </div>
+            
+            <div class="training-data">
+                <h2>بيانات التدريب - Training Data</h2>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalCount">0</div>
+                        <div class="stat-label">Total Entries</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="uniqueWords">0</div>
+                        <div class="stat-label">Unique Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="progress">0%</div>
+                        <div class="stat-label">Progress (of ~2000)</div>
+                    </div>
+                </div>
+                
+                <div class="data-list" id="dataList">
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        No training data yet. Start by entering your first word-color pair!
+                    </div>
+                </div>
+                
+                <div class="export-section">
+                    <button id="exportCSV" class="btn btn-secondary">تصدير CSV - Export CSV</button>
+                    <button id="importCSV" class="btn btn-secondary" style="display: none;">استيراد - Import</button>
+                    <input type="file" id="csvInput" accept=".csv" style="display: none;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ArabicColorTrainer {
+            constructor() {
+                this.trainingData = [];
+                this.initializeElements();
+                this.bindEvents();
+                this.loadFromLocalStorage();
+            }
+            
+            initializeElements() {
+                this.arabicInput = document.getElementById('arabicRoot');
+                this.colorPicker = document.getElementById('colorPicker');
+                this.colorDisplay = document.getElementById('colorDisplay');
+                this.addButton = document.getElementById('addData');
+                this.dataList = document.getElementById('dataList');
+                this.exportButton = document.getElementById('exportCSV');
+                this.wordError = document.getElementById('wordError');
+                
+                this.rgbValue = document.getElementById('rgbValue');
+                this.cieLValue = document.getElementById('cieL');
+                this.cieAValue = document.getElementById('cieA');
+                this.cieBValue = document.getElementById('cieB');
+                
+                this.totalCount = document.getElementById('totalCount');
+                this.uniqueWords = document.getElementById('uniqueWords');
+                this.progressCount = document.getElementById('progress');
+            }
+            
+            bindEvents() {
+                this.colorDisplay.addEventListener('click', () => {
+                    this.colorPicker.click();
+                });
+                
+                this.colorPicker.addEventListener('change', (e) => {
+                    this.updateColorDisplay(e.target.value);
+                });
+                
+                this.arabicInput.addEventListener('input', (e) => {
+                    this.validateArabicInput(e.target.value);
+                });
+                
+                this.addButton.addEventListener('click', () => {
+                    this.addTrainingData();
+                });
+                
+                this.exportButton.addEventListener('click', () => {
+                    this.exportToCSV();
+                });
+                
+                this.arabicInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.addTrainingData();
+                    }
+                });
+            }
+            
+            validateArabicInput(value) {
+                this.wordError.textContent = '';
+                
+                if (value.length === 0) return true;
+                
+                // Basic Arabic character validation (can be enhanced)
+                const arabicPattern = /^[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+$/;
+                
+                if (!arabicPattern.test(value)) {
+                    this.wordError.textContent = 'يرجى إدخال أحرف عربية فقط - Please enter Arabic letters only';
+                    return false;
+                }
+                
+                if (value.length > 3) {
+                    this.wordError.textContent = 'يرجى إدخال 3 أحرف فقط - Please enter exactly 3 letters';
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            updateColorDisplay(hexColor) {
+                this.colorDisplay.style.backgroundColor = hexColor;
+                
+                const rgb = this.hexToRgb(hexColor);
+                this.rgbValue.textContent = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+                
+                const cie = this.rgbToCIELab(rgb.r, rgb.g, rgb.b);
+                this.cieLValue.textContent = cie.L.toFixed(2);
+                this.cieAValue.textContent = cie.a.toFixed(2);
+                this.cieBValue.textContent = cie.b.toFixed(2);
+            }
+            
+            hexToRgb(hex) {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
+            
+            rgbToCIELab(r, g, b) {
+                // Convert RGB to XYZ
+                r = r / 255;
+                g = g / 255;
+                b = b / 255;
+                
+                r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+                g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+                b = b > 0.04045 ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+                
+                let x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
+                let y = (r * 0.2126 + g * 0.7152 + b * 0.0722) / 1.00000;
+                let z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
+                
+                x = x > 0.008856 ? Math.pow(x, 1/3) : (7.787 * x) + 16/116;
+                y = y > 0.008856 ? Math.pow(y, 1/3) : (7.787 * y) + 16/116;
+                z = z > 0.008856 ? Math.pow(z, 1/3) : (7.787 * z) + 16/116;
+                
+                return {
+                    L: (116 * y) - 16,
+                    a: 500 * (x - y),
+                    b: 200 * (y - z)
+                };
+            }
+            
+            addTrainingData() {
+                const word = this.arabicInput.value.trim();
+                const color = this.colorPicker.value;
+                
+                if (!this.validateArabicInput(word) || word.length !== 3) {
+                    this.wordError.textContent = 'يرجى إدخال جذر ثلاثي صحيح - Please enter a valid 3-letter root';
+                    return;
+                }
+                
+                const rgb = this.hexToRgb(color);
+                const cie = this.rgbToCIELab(rgb.r, rgb.g, rgb.b);
+                
+                const dataPoint = {
+                    word: word,
+                    letter1: word.charAt(0),
+                    letter2: word.charAt(1),
+                    letter3: word.charAt(2),
+                    hex: color,
+                    rgb: rgb,
+                    cie: cie,
+                    timestamp: new Date().toISOString()
+                };
+                
+                this.trainingData.push(dataPoint);
+                this.updateDisplay();
+                this.saveToLocalStorage();
+                
+                // Clear input for next entry
+                this.arabicInput.value = '';
+                this.wordError.textContent = '';
+                
+                // Focus back to input
+                this.arabicInput.focus();
+            }
+            
+            updateDisplay() {
+                this.updateStats();
+                this.renderDataList();
+            }
+            
+            updateStats() {
+                const total = this.trainingData.length;
+                const unique = new Set(this.trainingData.map(d => d.word)).size;
+                const progress = Math.round((total / 2000) * 100);
+                
+                this.totalCount.textContent = total;
+                this.uniqueWords.textContent = unique;
+                this.progressCount.textContent = progress + '%';
+            }
+            
+            renderDataList() {
+                if (this.trainingData.length === 0) {
+                    this.dataList.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">No training data yet. Start by entering your first word-color pair!</div>';
+                    return;
+                }
+                
+                const html = this.trainingData.slice().reverse().map((data, index) => `
+                    <div class="data-item">
+                        <div>
+                            <div class="word-display">${data.word}</div>
+                            <div style="font-size: 0.9rem; color: #666; margin-top: 3px;">
+                                ${data.letter1} | ${data.letter2} | ${data.letter3}
+                            </div>
+                        </div>
+                        <div class="color-preview" style="background-color: ${data.hex}"></div>
+                        <div style="font-family: monospace; font-size: 0.8rem;">
+                            L*: ${data.cie.L.toFixed(1)}<br>
+                            a*: ${data.cie.a.toFixed(1)}<br>
+                            b*: ${data.cie.b.toFixed(1)}
+                        </div>
+                        <button class="delete-btn" onclick="trainer.deleteData(${this.trainingData.length - 1 - index})">حذف</button>
+                    </div>
+                `).join('');
+                
+                this.dataList.innerHTML = html;
+            }
+            
+            deleteData(index) {
+                this.trainingData.splice(index, 1);
+                this.updateDisplay();
+                this.saveToLocalStorage();
+            }
+            
+            exportToCSV() {
+                if (this.trainingData.length === 0) {
+                    alert('لا توجد بيانات للتصدير - No data to export');
+                    return;
+                }
+                
+                const headers = ['word', 'letter1', 'letter2', 'letter3', 'hex_color', 'rgb_r', 'rgb_g', 'rgb_b', 'cie_l', 'cie_a', 'cie_b', 'timestamp'];
+                const csvData = [
+                    headers.join(','),
+                    ...this.trainingData.map(data => [
+                        data.word,
+                        data.letter1,
+                        data.letter2,
+                        data.letter3,
+                        data.hex,
+                        data.rgb.r,
+                        data.rgb.g,
+                        data.rgb.b,
+                        data.cie.L.toFixed(3),
+                        data.cie.a.toFixed(3),
+                        data.cie.b.toFixed(3),
+                        data.timestamp
+                    ].join(','))
+                ].join('\n');
+                
+                const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `arabic_color_training_data_${new Date().toISOString().split('T')[0]}.csv`;
+                link.click();
+            }
+            
+            saveToLocalStorage() {
+                localStorage.setItem('arabicColorTrainingData', JSON.stringify(this.trainingData));
+            }
+            
+            loadFromLocalStorage() {
+                const saved = localStorage.getItem('arabicColorTrainingData');
+                if (saved) {
+                    this.trainingData = JSON.parse(saved);
+                    this.updateDisplay();
+                }
+            }
+        }
+        
+        // Initialize the trainer
+        const trainer = new ArabicColorTrainer();
+        
+        // Set initial color
+        trainer.updateColorDisplay('#ffffff');
+    </script>
+</body>
+</html>
