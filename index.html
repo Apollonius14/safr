@@ -93,23 +93,25 @@
             box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
         }
         
+        /* MODIFIED FOR iOS FIX */
         .color-picker-section {
-            text-align: center;
+            position: relative; /* Allows absolute positioning of the input */
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
         }
         
         .color-display {
-            width: 150px;
-            height: 150px;
+            width: 100%; /* Fills the parent section */
+            height: 100%; /* Fills the parent section */
             border: 3px solid #ddd;
             border-radius: 50%;
-            margin: 20px auto;
-            cursor: pointer;
             transition: transform 0.2s;
             background: #ffffff;
         }
         
         .color-display:hover {
-            transform: scale(1.05);
+            transform: none; /* Hover effect is disabled as input is on top */
         }
         
         .color-values {
@@ -125,10 +127,17 @@
             margin: 5px 0;
         }
         
+        /* MODIFIED FOR iOS FIX */
         .hidden-color-input {
             opacity: 0;
             position: absolute;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            border-radius: 50%; /* Match shape for accurate tap target */
+            /* pointer-events: none; is REMOVED to make it clickable */
         }
         
         .btn {
@@ -290,13 +299,13 @@
                     <label>اختر اللون - Choose Color:</label>
                     <div class="color-picker-section">
                         <div id="colorDisplay" class="color-display" title="Click to select color"></div>
-                        <input type="color" id="colorPicker" class="hidden-color-input">
-                        <div class="color-values">
-                            <div>RGB: <span id="rgbValue">255, 255, 255</span></div>
-                            <div>CIE L*: <span id="cieL">100.00</span></div>
-                            <div>CIE a*: <span id="cieA">0.00</span></div>
-                            <div>CIE b*: <span id="cieB">0.00</span></div>
-                        </div>
+                        <input type="color" id="colorPicker" class="hidden-color-input" value="#ffffff">
+                    </div>
+                    <div class="color-values">
+                        <div>RGB: <span id="rgbValue">255, 255, 255</span></div>
+                        <div>CIE L*: <span id="cieL">100.00</span></div>
+                        <div>CIE a*: <span id="cieA">0.00</span></div>
+                        <div>CIE b*: <span id="cieB">0.00</span></div>
                     </div>
                 </div>
                 
@@ -365,11 +374,10 @@
             }
             
             bindEvents() {
-                this.colorDisplay.addEventListener('click', () => {
-                    this.colorPicker.click();
-                });
+                // REMOVED FOR iOS FIX: The click listener on colorDisplay is no longer needed.
+                // The user now clicks directly on the transparent color input.
                 
-                this.colorPicker.addEventListener('change', (e) => {
+                this.colorPicker.addEventListener('input', (e) => { // Use 'input' for real-time updates
                     this.updateColorDisplay(e.target.value);
                 });
                 
